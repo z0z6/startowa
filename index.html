@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administracyjny - Metaverse</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <script>
+        if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && window.innerWidth < 900)) {
+            document.documentElement.innerHTML = '<body style="margin:0;background:#111;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;padding:24px;"><div><h1>Dostęp zablokowany</h1><p>Panel administracyjny jest dostępny tylko z poziomu komputera.</p></div></body>';
+            throw new Error('Mobile access blocked');
+        }
+    </script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="section-title" style="font-size: 20px; color: #fff; margin-bottom: 24px;">⚙️ Panel Administracyjny</div>
+
+            <div class="preview-toggle">
+                <button id="btnPreviewDesktop" class="active">💻 Podgląd Desktop</button>
+                <button id="btnPreviewAndroid">📱 Podgląd Android</button>
+            </div>
+
+            <div class="section-title">💻 Wersja Komputerowa</div>
+            <div class="control-group">
+                <div class="control-row"><label>Pozycja gogli: Lewo ↔ Prawo</label><input type="range" id="desktop_vr_x" min="0" max="100"><span class="value-badge" id="desktop_vr_x_val">50</span></div>
+                <div class="control-row"><label>Pozycja gogli: Góra ↔ Dół</label><input type="range" id="desktop_vr_y" min="0" max="100"><span class="value-badge" id="desktop_vr_y_val">50</span></div>
+                <div class="control-row"><label>Rozmiar gogli</label><input type="range" id="desktop_vr_size" min="0.3" max="3.0" step="0.1"><span class="value-badge" id="desktop_vr_size_val">1.0</span></div>
+            </div>
+            <div class="control-group">
+                <div class="control-row"><label>Pozycja okna: Lewo ↔ Prawo</label><input type="range" id="desktop_panel_x" min="0" max="100"><span class="value-badge" id="desktop_panel_x_val">50</span></div>
+                <div class="control-row"><label>Pozycja okna: Góra ↔ Dół</label><input type="range" id="desktop_panel_y" min="0" max="100"><span class="value-badge" id="desktop_panel_y_val">50</span></div>
+                <div class="control-row"><label>Rozmiar okna</label><input type="range" id="desktop_panel_size" min="0.5" max="2.0" step="0.1"><span class="value-badge" id="desktop_panel_size_val">1.0</span></div>
+                <div class="control-row"><label>Przezroczystość</label><input type="range" id="desktop_panel_opacity" min="0.1" max="1.0" step="0.05"><span class="value-badge" id="desktop_panel_opacity_val">0.90</span></div>
+                <div class="control-row"><label>Jasność okna (glass)</label><input type="range" id="desktop_panel_brightness" min="0.5" max="2.0" step="0.05"><span class="value-badge" id="desktop_panel_brightness_val">1.30</span></div>
+            </div>
+            <div class="control-group">
+                <div class="control-row" style="flex-direction:column; align-items:flex-start; gap:4px;"><label style="font-size:12px; color:#888;">Tytuł okna</label><input type="text" id="desktop_panel_title"></div>
+                <div class="control-row" style="flex-direction:column; align-items:flex-start; gap:4px; margin-top:8px;"><label style="font-size:12px; color:#888;">Opis zawartości</label><input type="text" id="desktop_panel_content_desc"></div>
+                <div class="control-row" style="flex-direction:column; align-items:flex-start; gap:4px; margin-top:8px;"><label style="font-size:12px; color:#888;">Opis guzików</label><input type="text" id="desktop_panel_btn_desc"></div>
+            </div>
+            <div class="control-group">
+                <div class="control-row"><label>Tapeta</label><select id="desktop_wallpaper_index"><option value="0">Tapeta 1</option><option value="1">Tapeta 2</option><option value="2">Tapeta 3</option><option value="3">Tapeta 4</option><option value="4">Tapeta 5</option></select></div>
+                <div class="control-row"><label>Jasność tapety</label><input type="range" id="desktop_wallpaper_brightness" min="0.1" max="2.0" step="0.05"><span class="value-badge" id="desktop_wallpaper_brightness_val">1.05</span></div>
+                <div class="control-row"><label>Rozmycie tapety</label><input type="range" id="desktop_wallpaper_blur" min="0" max="50"><span class="value-badge" id="desktop_wallpaper_blur_val">0</span></div>
+            </div>
+            <div class="control-group">
+                <div class="control-row"><label>Kierunek obrotu gogli</label><select id="desktop_rotation_direction"><option value="1">Prawo</option><option value="-1">Lewo</option></select></div>
+                <div class="control-row"><label>Prędkość obrotu</label><input type="range" id="desktop_rotation_speed" min="0" max="2.0" step="0.05"><span class="value-badge" id="desktop_rotation_speed_val">0.10</span></div>
+            </div>
+            <div class="control-group">
+                <div class="control-row"><label>Kierunek wychylenia gogli</label><select id="desktop_tilt_direction"><option value="front-right">Góra → Prawo</option><option value="front-left">Góra → Lewo</option><option value="back-right">Góra → Prawo od widza</option><option value="back-left">Góra → Lewo od widza</option></select></div>
+                <div class="control-row"><label>Kąt wychylenia gogli</label><input type="range" id="desktop_tilt_angle" min="0" max="90"><span class="value-badge" id="desktop_tilt_angle_val">15</span></div>
+            </div>
+
+            <div class="section-title" style="margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px;">📱 Wersja Android / mobile</div>
+            <div class="control-group">
+                <div class="control-row"><label>Pozycja gogli: Lewo ↔ Prawo</label><input type="range" id="android_vr_x" min="0" max="100"><span class="value-badge" id="android_vr_x_val">50</span></div>
+                <div class="control-row"><label>Pozycja gogli: Góra ↔ Dół</label><input type="range" id="android_vr_y" min="0" max="100"><span class="value-badge" id="android_vr_y_val">20</span></div>
+                <div class="control-row"><label>Rozmiar gogli</label><input type="range" id="android_vr_size" min="0.3" max="3.0" step="0.1"><span class="value-badge" id="android_vr_size_val">0.9</span></div>
+            </div>
+            <div class="control-group">
+                <div class="control-row"><label>Pozycja okna: Lewo ↔ Prawo</label><input type="range" id="android_panel_x" min="0" max="100"><span class="value-badge" id="android_panel_x_val">50</span></div>
+                <div class="control-row"><label>Pozycja okna: Góra ↔ Dół</label><input type="range" id="android_panel_y" min="0" max="100"><span class="value-badge" id="android_panel_y_val">90</span></div>
+                <div class="control-row"><label>Rozmiar okna</label><input type="range" id="android_panel_size" min="0.5" max="2.0" step="0.1"><span class="value-badge" id="android_panel_size_val">0.9</span></div>
+                <div class="control-row"><label>Przezroczystość</label><input type="range" id="android_panel_opacity" min="0.1" max="1.0" step="0.05"><span class="value-badge" id="android_panel_opacity_val">0.90</span></div>
+                <div class="control-row"><label>Jasność okna (glass)</label><input type="range" id="android_panel_brightness" min="0.5" max="2.0" step="0.05"><span class="value-badge" id="android_panel_brightness_val">1.30</span></div>
+            </div>
+            <div class="control-group">
+                <div class="control-row" style="flex-direction:column; align-items:flex-start; gap:4px;"><label style="font-size:12px; color:#888;">Tytuł okna</label><input type="text" id="android_panel_title"></div>
+                <div class="control-row" style="flex-direction:column; align-items:flex-start; gap:4px; margin-top:8px;"><label style="font-size:12px; color:#888;">Opis zawartości</label><input type="text" id="android_panel_content_desc"></div>
+                <div class="control-row" style="flex-direction:column; align-items:flex-start; gap:4px; margin-top:8px;"><label style="font-size:12px; color:#888;">Opis guzików</label><input type="text" id="android_panel_btn_desc"></div>
+            </div>
+            <div class="control-group">
+                <div class="control-row"><label>Tapeta</label><select id="android_wallpaper_index"><option value="0">Tapeta 1</option><option value="1">Tapeta 2</option><option value="2">Tapeta 3</option><option value="3">Tapeta 4</option><option value="4">Tapeta 5</option></select></div>
+                <div class="control-row"><label>Jasność tapety</label><input type="range" id="android_wallpaper_brightness" min="0.1" max="2.0" step="0.05"><span class="value-badge" id="android_wallpaper_brightness_val">1.05</span></div>
+                <div class="control-row"><label>Rozmycie tapety</label><input type="range" id="android_wallpaper_blur" min="0" max="50"><span class="value-badge" id="android_wallpaper_blur_val">0</span></div>
+            </div>
+            <div class="control-group">
+                <div class="control-row"><label>Kierunek obrotu gogli</label><select id="android_rotation_direction"><option value="1">Prawo</option><option value="-1">Lewo</option></select></div>
+                <div class="control-row"><label>Prędkość obrotu</label><input type="range" id="android_rotation_speed" min="0" max="2.0" step="0.05"><span class="value-badge" id="android_rotation_speed_val">0.10</span></div>
+            </div>
+            <div class="control-group">
+                <div class="control-row"><label>Kierunek wychylenia gogli</label><select id="android_tilt_direction"><option value="front-right">Góra → Prawo</option><option value="front-left">Góra → Lewo</option><option value="back-right">Góra → Prawo od widza</option><option value="back-left">Góra → Lewo od widza</option></select></div>
+                <div class="control-row"><label>Kąt wychylenia gogli</label><input type="range" id="android_tilt_angle" min="0" max="90"><span class="value-badge" id="android_tilt_angle_val">15</span></div>
+            </div>
+
+            <div class="section-title" style="margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px;">🌐 Ustawienia Globalne</div>
+            <div class="control-group">
+                <div class="control-row"><label>Włącz tapety</label><label class="toggle-switch"><input type="checkbox" id="wallpaperEnabled" checked><span class="toggle-slider"></span></label></div>
+                <div class="control-row"><label>Kolor tła</label><input type="color" id="bgColor" value="#d6d6d6"><span class="value-badge" id="bgColorVal">#d6d6d6</span></div>
+            </div>
+
+            <button class="btn-action btn-export" id="exportBtn">📥 Eksportuj config.json</button>
+            <button class="btn-action btn-import" id="importBtn">📤 Importuj config.json</button>
+            <input type="file" id="importFile" accept=".json" style="display:none">
+        </aside>
+
+        <main class="admin-preview">
+            <div id="canvas-container"></div>
+
+            <div id="desktop-preview" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;">
+                <div id="mock-panel-desktop" class="preview-mock-panel">
+                    <h1>IMAGINARIUM</h1>
+                    <p>wirtualna przestrzeń wystawowa</p>
+                    <div class="preview-buttons">
+                        <button class="mode-btn-preview">Pierwsza osoba</button>
+                        <button class="mode-btn-preview">Trzecia osoba</button>
+                        <button class="mode-btn-preview">VR</button>
+                    </div>
+                    <p class="hint">W A S D — ruch | mysz — rozglądanie | SHIFT — bieg</p>
+                </div>
+            </div>
+
+            <div id="android-preview" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; align-items: center; justify-content: center; pointer-events: none; z-index: 5;">
+                <div id="phone-frame">
+                    <div id="mock-panel-android" class="preview-mock-panel">
+                        <h1>IMAGINARIUM</h1>
+                        <p>wirtualna przestrzeń wystawowa</p>
+                        <div class="preview-buttons">
+                            <button class="mode-btn-preview">Pierwsza osoba</button>
+                            <button class="mode-btn-preview">Trzecia osoba</button>
+                            <button class="mode-btn-preview">VR</button>
+                        </div>
+                        <p class="hint">Dotknij, aby wybrać tryb</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>
